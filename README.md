@@ -1,0 +1,35 @@
+# DOCKER-AUTOMATION-WITH-ANSIBLE
+- hosts: all
+  tasks:
+  - yum_repository:
+       name: "docker"
+       description: "docker yum repo"
+       baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+       gpgcheck: no
+  - name: installing docker package 
+    command: 
+       cmd: "yum install docker-ce --nobest -y " 
+
+
+  - service:
+       name: "docker"
+       state: "restarted"
+  - file:
+          state: directory
+          path: "/root/webpage"
+  - copy:        
+        src: "/root/my.html"
+        dest: "/root/webpage"
+  
+  - docker_container:
+       name: "webserver"
+       image: "httpd"
+       state: "started"
+       exposed_ports:
+       - "80"
+       ports: 
+       - "8888:80"
+       
+       volumes:
+       - "/root/webpage:/usr/local/apache2/htdocs/"
+                
